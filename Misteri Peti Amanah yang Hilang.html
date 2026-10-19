@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ms"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Misteri Peti Amanah yang Hilang</title>
+<style>
+:root{--g:#ffc83d;box-sizing:border-box}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0d0a1f;overflow:hidden;color:#fff;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;touch-action:none;-webkit-user-select:none;user-select:none}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+button{font-family:inherit;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#hud{position:fixed;top:calc(6px + env(safe-area-inset-top,0px));left:8px;right:8px;display:none;justify-content:space-between;align-items:flex-start;gap:6px;z-index:10;pointer-events:none}
+.pl{background:#000b;padding:6px 11px;border-radius:12px;font-weight:800;font-size:clamp(11px,2.9vw,15px);line-height:1.45}
+#hbtn{display:flex;gap:6px;pointer-events:auto}
+#hbtn button{width:46px;height:46px;border-radius:50%;border:2px solid #fff6;background:#000b;color:#fff;font-size:20px}
+#hc{letter-spacing:3px;color:var(--g)}
+#clue{position:fixed;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);max-width:46%;background:#fff3c4ee;color:#3a2a00;padding:6px 12px;border-radius:12px;font-size:clamp(11px,2.8vw,14px);font-weight:700;text-align:center;display:none;pointer-events:none}
+#cross{position:fixed;left:50%;top:50%;width:8px;height:8px;margin:-4px;border-radius:50%;background:#fff9;display:none;pointer-events:none;z-index:9}
+#prompt{position:fixed;left:50%;bottom:30%;transform:translateX(-50%);display:none;background:var(--g);color:#2a1f00;font-size:clamp(13px,3.4vw,17px);border:0;border-radius:24px;padding:10px 18px;box-shadow:0 4px 0 #a37a0a;z-index:12}
+#toast{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);background:#000d;border:2px solid var(--g);padding:12px 20px;border-radius:16px;font-weight:800;font-size:clamp(14px,3.8vw,21px);opacity:0;transition:opacity .25s;pointer-events:none;text-align:center;max-width:90%;z-index:30}
+#joy{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));width:120px;height:120px;border-radius:50%;background:#fff2;border:3px solid #fff6;display:none;touch-action:none;z-index:10}
+#knob{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#ffc83dcc}
+#ibtn{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(30px + env(safe-area-inset-bottom,0px));width:96px;height:96px;border-radius:50%;border:4px solid #fff8;background:#e0364acc;color:#fff;font-size:14px;display:none;z-index:10}
+#ibtn.on{background:var(--g);color:#2a1f00;box-shadow:0 0 22px var(--g)}
+#nav{position:fixed;top:calc(112px + env(safe-area-inset-top,0px));left:8px;display:none;flex-direction:column;gap:5px;z-index:10}
+#nav button{background:#1c2f6acc;color:#fff;border:2px solid #fff5;border-radius:10px;padding:7px 10px;font-size:clamp(11px,2.8vw,14px);text-align:left}
+#flash{position:fixed;inset:0;pointer-events:none;opacity:0;z-index:40}
+#flash.g{box-shadow:inset 0 0 0 14px #2fd27a,inset 0 0 120px #2fd27a;animation:fl .9s}
+#flash.r{box-shadow:inset 0 0 0 14px #ff3b4e,inset 0 0 120px #ff3b4e;animation:fl .9s}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+.scr{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16px;gap:10px;background:#0d0a1ff0;overflow:auto}
+.scr h1{margin:0;color:var(--g);font-size:clamp(22px,6vw,44px);text-shadow:0 3px 0 #0008}
+.scr p{max-width:600px;margin:0;line-height:1.5;font-size:clamp(13px,3.2vw,17px)}
+.big{font-size:clamp(17px,4.4vw,25px);background:var(--g);color:#2a1f00;border:0;border-radius:40px;padding:13px 34px;box-shadow:0 6px 0 #a37a0a}
+.big:active{transform:translateY(3px)}
+.alt{background:#fff;color:#241a4a;border:0;border-radius:20px;padding:8px 16px;font-size:14px}
+.alt.sel{background:var(--g)}
+.ill{font-size:clamp(34px,9vw,54px);letter-spacing:6px}
+.dlg{background:#fffbea;color:#2a2112;border-radius:14px;padding:12px 16px;text-align:left;border-left:8px solid #c0262d;max-height:34vh;overflow:auto;font-size:clamp(12px,3vw,16px);line-height:1.45}
+.dlg p{font-size:inherit;margin:0 0 6px;max-width:none}
+#lib{display:none;background:#ff4d5e;padding:10px;border-radius:10px}
+#panel{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;z-index:25;padding:10px;background:#0005}
+#pcard{width:min(580px,100%);max-height:80vh;overflow:auto;background:#fffbea;color:#2a2112;border-radius:8px;padding:14px;border-top:12px solid #c0262d;box-shadow:0 10px 40px #000;animation:pap .5s}
+@keyframes pap{from{transform:translateY(60px);opacity:0}}
+#pcard.sh{animation:shake .5s}
+@keyframes shake{20%{transform:translateX(-14px)}40%{transform:translateX(14px)}60%{transform:translateX(-10px)}80%{transform:translateX(10px)}}
+.ch{display:inline-block;border:3px solid #c0262d;color:#c0262d;font-weight:900;padding:2px 10px;border-radius:6px;transform:rotate(-2deg);margin-bottom:8px;font-size:clamp(13px,3.4vw,17px)}
+#qs{font-size:clamp(16px,4.2vw,23px);line-height:1.5;margin-bottom:10px;text-align:left}
+.bl{display:inline-block;min-width:90px;border-bottom:3px solid #c0262d;text-align:center;font-weight:900;color:#c0262d}
+#qo{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.op{min-height:52px;border:0;border-radius:12px;background:#4636a8;color:#fff;border-bottom:4px solid #2b1f78;text-align:left;padding:8px 12px;font-size:clamp(14px,3.8vw,20px)}
+.op.bad{background:#e0364a;border-color:#8f1624}.op.good{background:#1fb866;border-color:#0b7a41}
+#qf{min-height:26px;margin-top:8px;font-weight:900;font-size:clamp(13px,3.5vw,18px)}
+#pclose{display:none;margin:8px auto 0}
+#buzz{position:fixed;left:50%;top:26%;transform:translateX(-50%);font-size:clamp(46px,14vw,110px);font-weight:900;color:#ff3b4e;text-shadow:0 4px 0 #500;display:none;z-index:60;pointer-events:none}
+#kp{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:28;background:#000a}
+#kpc{background:#20303a;border:4px solid #8ea0ad;border-radius:16px;padding:14px;width:min(320px,94vw);text-align:center}
+#kd{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+#kd span{width:38px;height:50px;background:#0a1a10;border:2px solid #3f7;color:#5f9;font:900 28px monospace;display:grid;place-items:center;border-radius:6px}
+#kg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+#kg button{min-height:52px;border:0;border-radius:10px;background:#cfd8de;color:#16212a;font-size:20px;border-bottom:4px solid #7d8a93}
+#kg .ok{background:#2fd27a}#kg .del{background:#ffb347}
+#kmsg{min-height:44px;font-size:13px;font-weight:800;margin:6px 0}
+#inv,#pause,#int{display:none}
+#invl{text-align:left;font-size:clamp(14px,3.6vw,18px);line-height:1.8}
+#end{display:none;background:radial-gradient(circle,#fffbe0,#ffd877);color:#3a2500}
+#end p{font-weight:900}
+@media(max-width:420px){#qo{grid-template-columns:1fr}#clue{max-width:60%}}
+</style></head><body>
+<canvas id="cv"></canvas>
+<div id="hud"><div class="pl"><b>MISI: MISTERI PETI AMANAH</b><br>BARANG BUKTI: <span id="hb">0</span>/<span id="hn">6</span><br>KOD RAHSIA: <span id="hc"></span></div><div id="hbtn"><button id="bbag" title="Beg">🎒</button><button id="bpause" title="Jeda">⏸</button></div></div>
+<div id="nav"></div><div id="clue"></div><div id="cross"></div><button id="prompt"></button><div id="toast"></div>
+<div id="joy"><div id="knob"></div></div><button id="ibtn">INTERAKSI</button><div id="flash"></div><div id="buzz">TETTT!</div>
+<div id="panel"><div id="pcard"><div class="ch" id="ph"></div><div id="qs"></div><div id="qo"></div><div id="qf"></div><button class="big" id="pclose">TUTUP ✔</button></div></div>
+<div id="kp"><div id="kpc"><b>🔒 KUNCI DIGITAL PETI AMANAH</b><div id="kd" style="margin-top:8px"></div><div id="kg"></div><div id="kmsg"></div><button class="alt" id="kx">✕ Tutup</button></div></div>
+<div class="scr" id="inv"><h1>🎒 Fail Penyiasatan</h1><div id="invl"></div><button class="big" id="invx">TUTUP</button></div>
+<div class="scr" id="pause"><h1>⏸ Permainan Dijeda</h1><button class="big" id="resume">▶ SAMBUNG</button></div>
+<div class="scr" id="int"><h1>🏆 Peti Amanah Ditemukan!</h1><p style="font-size:clamp(15px,3.8vw,20px)">Wang sumbangan itu milik murid yang memerlukan. Menjaga amanah, meminta kebenaran dan bertanggungjawab terhadap barang yang dipercayakan kepada kita ialah amalan <b>integriti</b>.</p><p>Seorang detektif yang baik membuat kesimpulan berdasarkan <b>bukti</b>, bukan tuduhan.</p><button class="big" id="intx">TERUSKAN</button></div>
+<div class="scr" id="start"><div class="ill">🏚️🔰🔍🔒</div><h1>MISTERI PETI AMANAH<br>YANG HILANG</h1>
+<div class="dlg"><p><b>Inspektor:</b> “Perhatian kepada semua Detektif dan Polis Muda!</p><p>Satu peti amanah yang menyimpan wang sumbangan untuk membantu murid yang memerlukan telah hilang. Kita menerima maklumat bahawa peti tersebut mungkin berada di sebuah rumah misteri.</p><p>Saya memerlukan bantuan kamu untuk menyiasat rumah ini, mencari enam barang bukti dan mengumpulkan enam digit rahsia untuk membuka peti amanah tersebut.</p><p>Ingat! Seorang detektif yang hebat bukan sahaja bijak menyelesaikan kes, tetapi juga jujur, amanah dan bertanggungjawab.</p><p>Adakah kamu bersedia menerima misi ini?”</p></div>
+<p>💻 <b>W A S D</b> = jalan · seret tetikus = lihat · <b>E</b> = periksa · <b>Esc</b> = jeda<br>📱 Joystick = jalan · seret skrin = lihat · butang <b>INTERAKSI</b> = periksa</p>
+<div><button class="alt sel" id="mb">🧭 Mod Bebas</button> <button class="alt" id="mm">🗺️ Mod Mudah (butang navigasi)</button></div>
+<div id="cfgw" style="color:#ffb0b8;font-size:13px"></div><div id="lib">Pustaka 3D gagal dimuatkan. Sila semak sambungan internet (permainan ini memerlukan internet untuk memuatkan three.js) dan muat semula halaman.</div>
+<button class="big" id="go">TERIMA MISI</button></div>
+<div class="scr" id="end"><h1 style="color:#8a4b00">TAHNIAH, DETEKTIF DAN POLIS MUDA! KAMU BERJAYA MENYELESAIKAN KES MISTERI PETI AMANAH YANG HILANG!</h1><p style="font-size:clamp(16px,4vw,24px)">Integriti bermula dengan sikap jujur, amanah dan bertanggungjawab.</p><button class="big" id="again">🔁 MAIN SEMULA</button></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id);
+if(typeof THREE==='undefined'){$('lib').style.display='block';$('go').style.display='none';return}
+const T=THREE;
+/* ================= GURU: EDIT SOALAN DI SINI =================
+ location (ID tempat barang bukti, mesti salah satu):
+  laci_meja_belajar, rak_buku_tamu, meja_sisi_bilik, meja_belajar, kabinet_koridor, meja_bilik_belakang
+ correctAnswer = indeks jawapan betul (0=A, 1=B, 2=C, 3=D). digit = digit rahsia untuk kes itu.
+ finalCode mesti sama dengan semua digit digabung mengikut urutan id. */
+const finalCode="201205";
+const gameQuestions=[
+{id:1,evidenceName:"Kunci lama",location:"laci_meja_belajar",sentence:"Malaysia menjalinkan hubungan baik dengan negara-negara lain melalui kerjasama _____.",options:["antarabangsa","kaki bangku","besar kepala","ringan tangan"],correctAnswer:0,digit:"2",successMessage:"Barang bukti pertama berjaya diperoleh! Digit pertama kod rahsia ialah 2."},
+{id:2,evidenceName:"Buku catatan",location:"rak_buku_tamu",sentence:"Ali digelar _____ kerana dia tidak pandai bermain bola sepak.",options:["matahari","kaki bangku","tanggungjawab","kerjasama"],correctAnswer:1,digit:"0",successMessage:"Catatan ini mengandungi maklumat penting. Digit kedua kod rahsia ialah 0."},
+{id:3,evidenceName:"Kotak kecil",location:"meja_sisi_bilik",sentence:"Sebagai ketua kumpulan, Farah melaksanakan _____ yang diberikan oleh gurunya dengan bersungguh-sungguh.",options:["buah hati","makan angin","tanggungjawab","panjang tangan"],correctAnswer:2,digit:"1",successMessage:"Kamu semakin hampir menyelesaikan kes ini. Digit ketiga kod rahsia ialah 1."},
+{id:4,evidenceName:"Peta lipat",location:"meja_belajar",sentence:"Walaupun telah dinasihati berkali-kali, lelaki itu tetap _____ dan tidak mahu mendengar nasihat orang lain.",options:["matahari","kerjasama","besar kepala","antarabangsa"],correctAnswer:2,digit:"2",successMessage:"Peta ini membantu mengesahkan laluan penyiasatan. Digit keempat kod rahsia ialah 2."},
+{id:5,evidenceName:"Kotak besi",location:"kabinet_koridor",sentence:"Siti sangat disayangi oleh neneknya kerana dia merupakan _____ dalam keluarga.",options:["anak emas","olahraga","tandatangan","kerjasama"],correctAnswer:0,digit:"0",successMessage:"Barang bukti kelima berjaya ditemukan. Digit kelima kod rahsia ialah 0."},
+{id:6,evidenceName:"Jam poket",location:"meja_bilik_belakang",sentence:"Ibu dan ayah membawa kami _____ ke Pulau Langkawi semasa cuti sekolah.",options:["tanggungjawab","makan angin","antarabangsa","matahari"],correctAnswer:1,digit:"5",successMessage:"Syabas, Detektif dan Polis Muda! Kamu telah menemukan semua enam digit kod rahsia."}];
+/* ================= TAMAT BAHAGIAN GURU ================= */
+const N=gameQuestions.length,REACH=2.4;
+const IS_TOUCH=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
+let state='menu',prevState='play',mode='bebas',yaw=0,pitch=0,jx=0,jz=0,focus=null,fr=0,AC,EMS=null,auto=null;
+const keys={},items={},EVS={},AB=[],WAB=[],solids=[],pickM=[],sparks=[],tw=[],P={x:-5,z:4.6};
+const sc=new T.Scene();sc.background=new T.Color(0x0f0b1f);sc.fog=new T.FogExp2(0x0f0b1f,.045);
+const cam=new T.PerspectiveCamera(72,1,.05,40);cam.rotation.order='YXZ';
+const R=new T.WebGLRenderer({canvas:$('cv'),antialias:devicePixelRatio<2});R.setPixelRatio(Math.min(devicePixelRatio,1.75));
+function rs(){R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}addEventListener('resize',rs);rs();
+const MC={};const M=(c,e)=>MC[c+'_'+(e||0)]||(MC[c+'_'+(e||0)]=new T.MeshLambertMaterial({color:c,emissive:e||0}));
+const ease=p=>p*p*(3-2*p),GOLD=0xffcc33;
+function tween(d,f,e){tw.push({t:0,d,f,e})}function delay(d,fn){tween(d,()=>{},fn)}
+function B(x,y,z,w,h,d,c,s,p,em){const m=new T.Mesh(new T.BoxGeometry(w,h,d),M(c,em));m.position.set(x,y,z);(p||sc).add(m);if(s)AB.push([x-w/2,x+w/2,z-d/2,z+d/2]);if(EMS)EMS.push(m);return m}
+function TM(geo,mat,p,x,y,z){const m=new T.Mesh(geo,mat);m.position.set(x,y,z);(p||sc).add(m);if(EMS)EMS.push(m);return m}
+function F(x0,x1,z0,z1,c,y){const m=new T.Mesh(new T.PlaneGeometry(x1-x0,z1-z0),M(c));m.rotation.x=-Math.PI/2;m.position.set((x0+x1)/2,y||0,(z0+z1)/2);sc.add(m)}
+function W(x1,z1,x2,z2){const m=B((x1+x2)/2,1.5,(z1+z2)/2,Math.abs(x2-x1)||.2,3,Math.abs(z2-z1)||.2,0xcdbb9a,1);solids.push(m);WAB.push(AB[AB.length-1])}
+function G(x1,x2,z){solids.push(B((x1+x2)/2,2.65,z,x2-x1,.7,.2,0xcdbb9a));B(x1+.05,1.15,z,.1,2.3,.26,0x4a2c14);B(x2-.05,1.15,z,.1,2.3,.26,0x4a2c14)}
+function PL(x,y,z,i,d,c){const l=new T.PointLight(c||0xffd9a0,i,d);l.position.set(x,y,z);sc.add(l);return l}
+function cvT(w,h,f){const c=document.createElement('canvas');c.width=w;c.height=h;f(c.getContext('2d'),w,h);return new T.CanvasTexture(c)}
+const glyph=['🌄','🕵️','🔍','🏰','🦉','🗝️','🌙','📜','🖐️'];
+function PIC(x,y,z,ry,w,h,i){const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;sc.add(g);B(0,0,0,w+.12,h+.12,.05,0x6b4a12,0,g);
+ const t=cvT(128,96,(c,a,b)=>{const gr=c.createLinearGradient(0,0,a,b);gr.addColorStop(0,['#3b6fb5','#a8456b','#3d9970','#c98a2b'][i%4]);gr.addColorStop(1,'#1b1640');c.fillStyle=gr;c.fillRect(0,0,a,b);c.font='56px serif';c.textAlign='center';c.textBaseline='middle';c.fillText(glyph[i%9],a/2,b/2+4)});
+ const p=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t}));p.position.z=.03;g.add(p)}
+function WIN(x,y,z,ry){const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry;sc.add(g);B(0,0,0,1.5,1.2,.05,0x3a2410,0,g);const p=new T.Mesh(new T.PlaneGeometry(1.3,1),new T.MeshBasicMaterial({map:cvT(64,48,(c,a,b)=>{c.fillStyle='#233a8f';c.fillRect(0,0,a,b);c.font='26px serif';c.fillText('🌙',34,26)})}));p.position.z=.03;g.add(p)}
+function LAMP(x,z){const m=new T.Mesh(new T.CylinderGeometry(.03,.03,1.4,6),M(0x333333));m.position.set(x,.7,z);sc.add(m);const s=new T.Mesh(new T.CylinderGeometry(.18,.3,.35,10),M(0xffe08a,0xffc552));s.position.set(x,1.55,z);sc.add(s)}
+const sprMat=new T.SpriteMaterial({map:cvT(64,64,(c,a)=>{const g=c.createRadialGradient(32,32,2,32,32,30);g.addColorStop(0,'#fff');g.addColorStop(.3,'#ffd84a');g.addColorStop(1,'#ffd84a00');c.fillStyle=g;c.fillRect(0,0,a,a)}),transparent:true,depthWrite:false});
+function SP(par,x,y,z){const s=new T.Sprite(sprMat);s.position.set(x,y,z);par.add(s);sparks.push(s);return s}
+function reg(m,r){m.userData.ref=r;pickM.push(m)}
+function rAB(x,z,w,d,r){return Math.abs(Math.sin(r))>.5?[x-d/2,x+d/2,z-w/2,z+w/2]:[x-w/2,x+w/2,z-d/2,z+d/2]}
+/* laci tunggal */
+function DU(id,x,z,w,h,d,rot,c,lab){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rot;sc.add(g);B(0,h/2,0,w,h,d,c,0,g);AB.push(rAB(x,z,w,d,rot));
+ const hh=h*.55;B(0,(h-hh)/2,d/2+.01,w-.06,h-hh-.04,.02,0x8a5a2e,0,g);
+ const dr=new T.Group();dr.position.set(0,h-hh/2,d/2);g.add(dr);
+ const it={id,kind:'cont',type:'z',pv:dr,base:d/2,lab,open:false,ev:null,par:dr,ey:-hh/2+.095,ez:-.3,wp:[x,z]};items[id]=it;
+ [B(0,0,.02,w-.06,hh-.05,.04,0x9a6a38,0,dr),B(0,-hh/2+.07,-.28,w-.14,.03,.55,0x5c3a1c,0,dr),B(-(w-.14)/2,-hh/2+.14,-.28,.03,.14,.55,0x5c3a1c,0,dr),B((w-.14)/2,-hh/2+.14,-.28,.03,.14,.55,0x5c3a1c,0,dr),B(0,-hh/2+.14,-.55,w-.14,.14,.03,0x5c3a1c,0,dr),B(0,0,.06,.16,.04,.05,GOLD,0,dr,0xaa7700)].forEach(m=>reg(m,it));
+ it.sp=SP(dr,0,.3,.15);return it}
+/* kabinet pintu / peti penutup */
+function CAB(id,x,z,w,h,d,rot,c,lab,lid){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rot;sc.add(g);AB.push(rAB(x,z,w,d,rot));const t=.05;
+ B(0,h/2,-d/2+t/2,w,h,t,c,0,g);B(-w/2+t/2,h/2,0,t,h,d,c,0,g);B(w/2-t/2,h/2,0,t,h,d,c,0,g);B(0,t/2,0,w,t,d,c,0,g);
+ const it={id,kind:'cont',lab,open:false,ev:null,par:g,ez:0,ey:lid?.06:h*.4+.03,wp:[x,z]};items[id]=it;let ms;
+ if(lid){B(0,h/2,d/2-t/2,w,h,t,c,0,g);const pv=new T.Group();pv.position.set(0,h,-d/2);g.add(pv);it.type='rx';it.pv=pv;ms=[B(0,.02,d/2,w,.05,d,0x8a5a2e,0,pv),B(0,.06,d-.05,.16,.05,.05,GOLD,0,pv,0xaa7700)]}
+ else{B(0,h-t/2,0,w,t,d,c,0,g);B(0,h*.4,0,w-2*t,t,d-t,c,0,g);const pv=new T.Group();pv.position.set(-w/2,0,d/2);g.add(pv);it.type='ry';it.pv=pv;ms=[B(w/2,h/2,.02,w-.02,h-.02,.04,0x9a6a38,0,pv),B(w-.12,h*.5,.06,.05,.16,.05,GOLD,0,pv,0xaa7700)]}
+ ms.forEach(m=>reg(m,it));it.sp=SP(g,0,h+.25,d/2);return it}
+let sd=7;const rnd=()=>(sd=(sd*9301+49297)%233280)/233280;
+function BC(x,z,rot,w,h,d,id,lab){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rot;sc.add(g);const y0=.85;
+ if(id)CAB(id,x,z,w,y0,d,rot,0x6b3f1e,lab);else{B(0,y0/2,0,w,y0,d,0x6b3f1e,0,g);AB.push(rAB(x,z,w,d,rot))}
+ B(0,(h+y0)/2,-d/2+.02,w,h-y0,.04,0x4a2c14,0,g);B(-w/2+.02,(h+y0)/2,0,.04,h-y0,d,0x6b3f1e,0,g);B(w/2-.02,(h+y0)/2,0,.04,h-y0,d,0x6b3f1e,0,g);
+ const cs=[0xc0392b,0x2e86c1,0x27ae60,0xf1c40f,0x8e44ad,0xe67e22];
+ for(let k=0;k<4;k++){const y=y0+k*(h-y0)/3;B(0,y,0,w,.04,d,0x6b3f1e,0,g);if(k<3)for(let b=-w/2+.1;b<w/2-.12;b+=.09){if(id&&k===1&&Math.abs(b-.3)<.22)continue;const bh=.22+rnd()*.14;B(b,y+.02+bh/2,0,.07,bh,d*.6,cs[(rnd()*6)|0],0,g)}}return g}
+/* ===== BARANG BUKTI (model 3D) ===== */
+function mkEv(id,name,build,par,x,y,z,wp,ry){const ev={kind:'ev',id,name,wp,ms:[],solved:false,cont:null};EMS=ev.ms;const g=new T.Group();g.position.set(x,y,z);g.rotation.y=ry||0;par.add(g);Object.assign(ev,build(g));EMS=null;ev.g=g;ev.par=par;ev.hp=[x,y,z,ry||0];ev.ms.forEach(m=>m.userData.ref=ev);ev.sp=SP(g,0,.22,0);ev.open(0);EVS[id]=ev;return ev}
+function enable(ev){ev.ms.forEach(m=>{if(!pickM.includes(m))pickM.push(m)})}
+function holdIn(cid,ev){const it=items[cid];it.ev=ev;ev.cont=it}
+const bKey=g=>{const k=new T.Group();g.add(k);B(0,0,.02,.025,.018,.15,GOLD,0,k,0x886600);TM(new T.TorusGeometry(.04,.012,8,16),M(GOLD,0x886600),k,0,0,-.11).rotation.x=Math.PI/2;B(.04,0,.07,.05,.018,.025,GOLD,0,k,0x886600);B(.04,0,.03,.04,.018,.025,GOLD,0,k,0x886600);return{open:e=>{k.rotation.y=e*6.28;k.position.y=e*.03}}};
+const bNote=g=>{B(0,.015,0,.2,.03,.28,0x8a3a3a,0,g);B(0,.035,0,.19,.012,.26,0xfffdf0,0,g);
+ TM(new T.PlaneGeometry(.17,.24),new T.MeshBasicMaterial({map:cvT(64,96,(c,a,b)=>{c.fillStyle='#fffdf0';c.fillRect(0,0,a,b);c.strokeStyle='#8ab';for(let y=14;y<b;y+=9){c.beginPath();c.moveTo(6,y);c.lineTo(a-6,y);c.stroke()}c.fillStyle='#c0262d';c.font='bold 9px sans-serif';c.fillText('CATATAN',8,10)})}),g,0,.042,0).rotation.x=-Math.PI/2;
+ const pv=new T.Group();pv.position.set(-.1,.04,0);g.add(pv);B(.1,0,0,.2,.016,.28,0xa84a4a,0,pv);B(.1,.012,0,.12,.004,.08,GOLD,0,pv,0xaa7700);return{pv,ax:'z',ang:2.8,open:e=>{pv.rotation.z=2.8*e}}};
+const bBox=g=>{B(0,.04,0,.2,.08,.15,0x8a5a2e,0,g);B(0,.078,0,.14,.01,.1,0xfff3c4,0,g);const pv=new T.Group();pv.position.set(0,.08,-.075);g.add(pv);B(0,.01,.075,.2,.02,.15,0xa8703a,0,pv);B(0,0,.15,.04,.03,.02,GOLD,0,pv,0xaa7700);return{pv,ax:'x',ang:-1.9,open:e=>{pv.rotation.x=-1.9*e}}};
+const bMap=g=>{const sh=new T.Group();g.add(sh);B(0,.004,0,.34,.008,.24,0xf0e2b0,0,sh);
+ TM(new T.PlaneGeometry(.32,.22),new T.MeshBasicMaterial({map:cvT(128,96,(c,a,b)=>{c.fillStyle='#f0e2b0';c.fillRect(0,0,a,b);c.strokeStyle='#b34';c.lineWidth=3;c.setLineDash([6,4]);c.beginPath();c.moveTo(10,80);c.bezierCurveTo(40,10,80,90,116,20);c.stroke();c.setLineDash([]);c.fillStyle='#b34';c.font='bold 24px sans-serif';c.fillText('X',104,32)})}),sh,0,.009,0).rotation.x=-Math.PI/2;sh.scale.x=.35;return{open:e=>{sh.scale.x=.35+.65*e}}};
+const bIron=g=>{B(0,.08,0,.34,.16,.22,0x55606b,0,g);B(0,.158,0,.28,.01,.16,0xfff3c4,0,g);const pv=new T.Group();pv.position.set(0,.16,-.11);g.add(pv);B(0,.02,.11,.34,.04,.22,0x6b7681,0,pv);[[-.14,.08],[.14,.08],[-.14,.14],[.14,.14]].forEach(a=>B(a[0],.045,a[1],.025,.02,.025,GOLD,0,pv,0xaa7700));B(0,.1,.112,.06,.07,.02,GOLD,0,g,0xaa7700);return{pv,ax:'x',ang:-1.9,open:e=>{pv.rotation.x=-1.9*e}}};
+const bWatch=g=>{TM(new T.CylinderGeometry(.08,.08,.025,20),M(GOLD,0x886600),g,0,.0125,0);
+ TM(new T.PlaneGeometry(.14,.14),new T.MeshBasicMaterial({map:cvT(96,96,(c,a)=>{c.fillStyle='#fffbe8';c.beginPath();c.arc(48,48,46,0,7);c.fill();c.strokeStyle='#333';c.lineWidth=3;c.stroke();c.fillStyle='#333';for(let i=0;i<12;i++){const t=i*Math.PI/6;c.fillRect(48+Math.sin(t)*38-2,48-Math.cos(t)*38-2,4,4)}c.lineWidth=4;c.beginPath();c.moveTo(48,48);c.lineTo(48,20);c.moveTo(48,48);c.lineTo(68,56);c.stroke()})}),g,0,.0265,0).rotation.x=-Math.PI/2;
+ const pv=new T.Group();pv.position.set(-.08,.028,0);g.add(pv);TM(new T.CylinderGeometry(.08,.08,.012,20),M(0xe0b02a,0x886600),pv,.08,.006,0);return{pv,ax:'z',ang:2.9,open:e=>{pv.rotation.z=2.9*e}}};
+/* ===== RUMAH (5 ruang, kecil) ===== */
+W(-8,-5.5,8,-5.5);W(-8,6,-6,6);W(-4,6,8,6);W(-8,-5.5,-8,6);W(8,-5.5,8,6);
+W(-8,1.6,-1.2,1.6);W(1.2,1.6,4.2,1.6);W(5.8,1.6,8,1.6);W(2,1.6,2,6);
+W(-8,-1.2,-5,-1.2);W(-3.4,-1.2,3.4,-1.2);W(5,-1.2,8,-1.2);W(0,-5.5,0,-1.2);
+G(-6,-4,6);G(-1.2,1.2,1.6);G(4.2,5.8,1.6);G(-5,-3.4,-1.2);G(3.4,5,-1.2);
+F(-8,2,1.6,6,0x8b5a2b);F(2,8,1.6,6,0x5a4a3a);F(-8,8,-1.2,1.6,0x4a3a5a);F(-8,0,-5.5,-1.2,0x3d6b4f);F(0,8,-5.5,-1.2,0x4a5f8f);B(0,3.05,.25,16,.1,11.5,0x2a2440);
+F(-3.5,0,2.8,4.6,0x7a2a3a,.01);F(-7.5,7.5,-.3,.7,0x8a1f2d,.01);F(1,3.6,-3.2,-1.6,0x2d4d8a,.01);F(-6,-2.5,-4.2,-1.8,0x2a5a3a,.01);F(3.5,6.8,2.6,5.4,0x5a2a2a,.01);
+sc.add(new T.AmbientLight(0x9a98d8,.95));const pl=PL(0,1.6,0,.9,8);PL(.9,2,5.4,1.1,9);PL(-4,2.2,-3.5,1,9);PL(3.2,1.6,-3.6,1,9);PL(5,2.2,3.8,1,9);
+/* ruang tamu */
+const sofaRef={kind:'decoy',lab:'sofa',wp:[-1.2,5.3]};
+[B(-1.2,.25,5.3,2.6,.5,.9,0x2f6f8f,1),B(-1.2,.75,5.7,2.6,.7,.25,0x2f6f8f),B(-2.4,.45,5.3,.2,.9,.9,0x245a75),B(0,.45,5.3,.2,.9,.9,0x245a75)].forEach(m=>reg(m,sofaRef));
+B(-1.2,.4,3.7,1.2,.06,.7,0x6b3f1e,1);[[-.5,-.28],[.5,-.28],[-.5,.28],[.5,.28]].forEach(a=>B(-1.2+a[0],.2,3.7+a[1],.06,.4,.06,0x3a2410));
+LAMP(.9,5.5);DU('kabinet_tamu',-7.5,2.55,1.6,.9,.8,Math.PI/2,0x7a4a24,'laci kabinet');
+const bg=BC(-7.65,4.5,Math.PI/2,2,2.4,.5,'rak_bawah','kabinet rak');
+const y1=.85+(2.4-.85)/3;
+const evNote=mkEv('rak_buku_tamu','Buku catatan',bNote,bg,.3,y1+.02,.02,[-7.65,4.5]);enable(evNote);
+PIC(-4.5,1.7,1.72,0,1.2,.9,0);PIC(-2.4,1.7,1.72,0,1.2,.9,1);PIC(-1.2,1.8,5.88,Math.PI,1.1,.8,3);PIC(1.88,1.7,4,-Math.PI/2,1.2,.9,2);WIN(-2.6,1.7,5.88,Math.PI);
+/* ruang belajar */
+B(-4,.76,-4.95,2,.06,.9,0x5c3a1c,1);B(-4.97,.38,-4.95,.06,.76,.8,0x5c3a1c);DU('laci_meja_belajar',-3.35,-4.95,.6,.74,.8,0,0x6b4423,'laci meja');
+B(-4.2,1.1,-5.2,.7,.45,.05,0x111111);B(-4.2,1.1,-5.17,.62,.38,.02,0x3aa0ff,0,sc,0x2a80d0);B(-4.2,.82,-5.2,.1,.1,.1,0x222222);B(-4.2,.8,-4.75,.5,.02,.18,0x222222);
+B(-4,.5,-3.9,.55,.08,.55,0x222a55,1);B(-4,.85,-3.65,.55,.7,.08,0x222a55);B(-4,.25,-3.9,.06,.5,.06,0x222222);
+const evKey=mkEv('laci_meja_belajar','Kunci lama',bKey,items.laci_meja_belajar.par,0,items.laci_meja_belajar.ey,items.laci_meja_belajar.ez,[-3.35,-4.95]);holdIn('laci_meja_belajar',evKey);
+const evMap=mkEv('meja_belajar','Peta lipat',bMap,sc,-4.7,.79,-5,[-4.5,-4.95]);enable(evMap);
+DU('fail_laci',-7.6,-3.3,.8,1.3,.6,Math.PI/2,0x7a8794,'laci fail');BC(-.25,-3.3,-Math.PI/2,2,2.2,.3);WIN(-2,1.7,-5.38,0);PIC(-7.88,1.7,-2,Math.PI/2,1,.8,4);
+/* bilik tidur */
+const bedRef={kind:'decoy',lab:'katil',wp:[5.4,-4]};
+[B(5.4,.3,-4,1.8,.4,2.8,0x6b3b2a,1),B(5.4,.55,-3.95,1.7,.25,2.6,0xe8e8f5),B(5.4,.72,-5,1.1,.12,.45,0xffffff),B(5.4,.7,-3.5,1.75,.12,1.4,0x2f5fb0)].forEach(m=>reg(m,bedRef));B(5.4,.9,-5.35,1.9,.9,.1,0x5a3220);
+DU('meja_sisi',3.9,-5.1,.55,.6,.45,0,0x7a4a24,'laci meja sisi');
+const evBox=mkEv('meja_sisi_bilik','Kotak kecil',bBox,sc,3.9,.6,-5.1,[3.9,-5.1]);enable(evBox);
+CAB('almari',.425,-3.2,1.6,2.3,.65,Math.PI/2,0x8a5a32,'almari');WIN(2,1.7,-5.38,0);PIC(7.88,1.7,-3.5,-Math.PI/2,1.2,.9,5);
+/* koridor */
+CAB('kabinet_koridor',-5,1.25,1.2,1.1,.5,Math.PI,0x6b4a2a,'kabinet');
+const evIron=mkEv('kabinet_koridor','Kotak besi',bIron,items.kabinet_koridor.par,0,items.kabinet_koridor.ey,0,[-5,1.25]);holdIn('kabinet_koridor',evIron);
+DU('meja_koridor',6.9,1.3,1,.8,.4,Math.PI,0x5a3a1c,'laci meja');B(6.9,1.05,1.3,.14,.4,.14,0x5aa7c9);
+B(-7.7,1.1,.2,.4,2.2,.6,0x4a2c14,1);B(-7.49,1.6,.2,.02,.5,.4,0xffeeb0,0,sc,0xcca040);
+PIC(-6.5,1.7,-1.08,0,1,.8,6);PIC(-2,1.7,-1.08,0,1,.8,8);PIC(2,1.7,-1.08,0,1,.8,7);PIC(-3,1.7,1.48,Math.PI,1,.8,1);PIC(2.7,1.7,1.48,Math.PI,1,.8,0);
+[-4,4].forEach(x=>B(x,2.9,.2,.9,.1,.5,0xffe9a8,0,sc,0xffd060));
+const lens=new T.Mesh(new T.TorusGeometry(.12,.025,8,16),M(GOLD,0xaa7700));lens.rotation.x=-Math.PI/2;lens.position.set(-2.5,.03,.5);sc.add(lens);
+[-5,3.4].forEach(x=>{const g=new T.Group();g.position.set(x,0,-1.2);g.rotation.y=1.1;sc.add(g);B(.8,1.15,0,1.6,2.3,.06,0x7b4521,0,g)});
+/* pintu utama (hiasan, terkunci) */
+const dp=new T.Group();dp.position.set(-6,0,6);sc.add(dp);AB.push([-6,-4,5.85,6.15]);const DOOR={kind:'decoy',lab:'pintu utama',wp:[-5,6],msg:'Pintu utama dikunci. Selesaikan kes dan cari peti amanah!'};
+[B(1,1.15,0,2,2.3,.08,0x7b4521,0,dp),B(1.7,1.1,.07,.1,.1,.1,GOLD,0,dp,0xaa7700),B(1.5,1.4,-.07,.3,.3,.05,0xd62839,0,dp,0xd62839)].forEach(m=>reg(m,DOOR));
+/* bilik belakang + peti amanah */
+B(4.4,.76,4.3,1.4,.06,.8,0x5c3a1c,1);[[-.6,-.3],[.6,-.3],[-.6,.3],[.6,.3]].forEach(a=>B(4.4+a[0],.38,4.3+a[1],.06,.76,.06,0x3a2410));
+const evWatch=mkEv('meja_bilik_belakang','Jam poket',bWatch,sc,4.4,.79,4.3,[4.4,4.3]);enable(evWatch);
+CAB('peti_belakang',3,2.05,.9,.5,.5,0,0x7a5a3a,'peti kayu',true);B(3,.3,5.4,.6,.6,.6,0x8a6a3a,1);B(3.7,.2,5.5,.5,.4,.5,0x9a7a4a,1);
+const VAULT={kind:'vault',lab:'peti amanah',wp:[7.2,5.3],open:false};const vm=[];
+B(7.2,.25,5.3,1,.5,.7,0x3a3a44,1);
+[B(7.2,.52,5.3,1,.04,.7,0x2e5e46),B(7.2,.76,4.97,1,.5,.06,0x2e5e46),B(7.2,.76,5.63,1,.5,.06,0x2e5e46),B(6.72,.76,5.3,.06,.5,.7,0x2e5e46),B(7.68,.76,5.3,.06,.5,.7,0x2e5e46)].forEach(m=>{reg(m,VAULT)});
+const money=[B(7.0,.62,5.3,.34,.14,.22,0x3fa85a),B(7.0,.76,5.3,.34,.14,.22,0x4fba6a),B(7.4,.58,5.3,.3,.06,.4,0xfff7d8),B(7.38,.62,5.2,.12,.03,.12,GOLD,0,sc,0x886600)];money.forEach(m=>m.visible=false);
+const vpv=new T.Group();vpv.position.set(7.2,1,5.65);sc.add(vpv);reg(B(0,.04,-.35,1.04,.08,.74,0x3a7a5a,0,vpv),VAULT);B(0,.1,-.7,.2,.08,.03,GOLD,0,vpv,0xaa7700);
+const kpTex=cvT(128,96,(c,a,b)=>{c.fillStyle='#0a1a10';c.fillRect(0,0,a,b);c.fillStyle='#5f9';c.font='bold 18px monospace';c.fillText('- - - - - -',12,22);c.fillStyle='#cfd8de';for(let i=0;i<12;i++)c.fillRect(10+(i%3)*38,34+((i/3)|0)*15,30,11)});
+const kpm=new T.Mesh(new T.PlaneGeometry(.5,.38),new T.MeshBasicMaterial({map:kpTex}));kpm.position.set(7.2,.78,4.935);kpm.rotation.y=Math.PI;sc.add(kpm);reg(kpm,VAULT);
+const vlight=PL(7.2,1.5,5.3,0,7,0xffd24d);
+const glow=new T.Sprite(new T.SpriteMaterial({map:sprMat.map,transparent:true,blending:T.AdditiveBlending,depthWrite:false}));glow.position.set(7.2,1.3,5.3);glow.scale.set(.1,.1,.1);glow.visible=false;sc.add(glow);
+VAULT.sp=SP(sc,7.2,1.5,5.3);
+/* ===== SKRIP LAIN ===== */
+const ROOMS={tamu:{n:'Ruang Tamu',c:[-3.5,3.3],ex:[[0,2.5],[0,.4]]},belajar:{n:'Ruang Belajar',c:[-4.2,-2.4],ex:[[-4.2,-2.2],[-4.2,.4]]},tidur:{n:'Bilik Tidur',c:[2.4,-2.6],ex:[[4.2,-2],[4.2,.4]]},koridor:{n:'Koridor',c:[0,.4],ex:[]},belakang:{n:'Bilik Belakang',c:[5.6,3],ex:[[5,2.6],[5,.4]]}};
+function roomOf(x,z){if(z>1.6)return x<2?'tamu':'belakang';if(z<-1.2)return x<0?'belajar':'tidur';return'koridor'}
+function pathTo(k){const a=ROOMS[roomOf(P.x,P.z)],b=ROOMS[k],p=[];if(a===b)return[b.c];a.ex.forEach(e=>p.push(e));b.ex.slice().reverse().forEach(e=>p.push(e));p.push(b.c);return p}
+/* ===== AUDIO & UI ===== */
+function snd(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch(e){}}
+function tone(f,d,ty,g,t0){try{if(!AC)return;const o=AC.createOscillator(),n=AC.createGain();o.type=ty;o.frequency.value=f;n.gain.value=g;o.connect(n);n.connect(AC.destination);const s=AC.currentTime+(t0||0);o.start(s);n.gain.exponentialRampToValueAtTime(.001,s+d);o.stop(s+d)}catch(e){}}
+function clap(){try{if(!AC)return;for(let k=0;k<6;k++){const b=AC.createBuffer(1,2200,AC.sampleRate),d=b.getChannelData(0);for(let j=0;j<d.length;j++)d[j]=(Math.random()*2-1)*Math.exp(-j/380);const s=AC.createBufferSource(),g=AC.createGain();g.gain.value=.7;s.buffer=b;s.connect(g);g.connect(AC.destination);s.start(AC.currentTime+k*.13+Math.random()*.05)}}catch(e){}}
+const winS=()=>{clap();[523,659,784,1047].forEach((f,k)=>tone(f,.25,'triangle',.2,k*.11))},buzzS=()=>tone(150,.7,'sawtooth',.3),blip=()=>{tone(700,.1,'square',.12);tone(950,.12,'square',.1,.08)};
+let tt;function say(m,ms){const t=$('toast');t.textContent=m;t.style.opacity=1;clearTimeout(tt);tt=setTimeout(()=>t.style.opacity=0,ms||2400)}
+function fx(c){const f=$('flash');f.className='';void f.offsetWidth;f.className=c}
+function setClue(t){const c=$('clue');c.textContent='🔎 '+t;c.style.display='block'}
+/* ===== INTERAKSI ===== */
+const rc=new T.Raycaster(),v2=new T.Vector2();
+function pickAt(nx,ny){v2.set(nx,ny);rc.setFromCamera(v2,cam);const h=rc.intersectObjects(pickM,false)[0];if(!h)return null;const w=rc.intersectObjects(solids,false)[0];if(w&&w.distance<h.distance)return null;return{ref:h.object.userData.ref,d:h.distance}}
+const labOf=r=>r.kind==='ev'?r.name:r.kind==='vault'?'peti amanah':r.lab||'objek';
+const NOCLUE='Tiada petunjuk di sini. Teruskan penyiasatan!';
+function act(r){if(r.kind==='cont')useCont(r);else if(r.kind==='ev')evUse(r);else if(r.kind==='vault')vaultUse(r);else say(r.msg||NOCLUE)}
+function interact(h){if(state!=='play'||!h)return;if(h.d>REACH){say('Dekati objek ini dahulu...',1400);return}act(h.ref)}
+function setO(it,e){if(it.type==='z')it.pv.position.z=it.base+.55*e;else if(it.type==='ry')it.pv.rotation.y=-1.9*e;else it.pv.rotation.x=-1.9*e}
+function useCont(it){if(!it.open){it.open=true;it.sp.visible=false;tone(120,.45,'sawtooth',.12);tween(.55,p=>setO(it,ease(p)),()=>{if(it.ev){enable(it.ev);blip();say('Anda menemui sesuatu!')}else say(NOCLUE)})}
+ else if(it.ev&&!it.ev.solved)say('Periksa barang bukti di dalam.');else say(NOCLUE)}
+/* ===== KAWALAN ===== */
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(k==='escape'){if(state==='kp')closeKp();else togglePause();return}keys[k]=1;if((k==='e'||k===' ')&&focus&&state==='play')interact(focus);if(state==='kp')kpKey(k)});addEventListener('keyup',e=>keys[e.key.toLowerCase()]=0);
+const joy=$('joy'),kn=$('knob');let jid=null;
+function jm(e){const r=joy.getBoundingClientRect();let dx=(e.clientX-r.left-60)/60,dy=(e.clientY-r.top-60)/60;const l=Math.hypot(dx,dy);if(l>1){dx/=l;dy/=l}jx=dx;jz=-dy;kn.style.transform=`translate(${dx*35}px,${dy*35}px)`}
+joy.addEventListener('pointerdown',e=>{jid=e.pointerId;joy.setPointerCapture(jid);jm(e)});joy.addEventListener('pointermove',e=>{if(e.pointerId===jid)jm(e)});
+const je=e=>{if(e.pointerId===jid){jid=null;jx=jz=0;kn.style.transform=''}};joy.addEventListener('pointerup',je);joy.addEventListener('pointercancel',je);
+let lk=null;const cv=$('cv');
+cv.addEventListener('pointerdown',e=>{if(lk)return;lk={id:e.pointerId,x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now()};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!lk||e.pointerId!==lk.id||state!=='play')return;yaw-=(e.clientX-lk.x)*.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-(e.clientY-lk.y)*.005));lk.x=e.clientX;lk.y=e.clientY});
+cv.addEventListener('pointerup',e=>{if(!lk||e.pointerId!==lk.id)return;if(Math.hypot(e.clientX-lk.sx,e.clientY-lk.sy)<10&&performance.now()-lk.t<600)interact(pickAt(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight*2-1)));lk=null});
+cv.addEventListener('pointercancel',()=>lk=null);
+$('prompt').addEventListener('pointerdown',e=>{e.stopPropagation();if(focus)interact(focus)});
+$('ibtn').addEventListener('pointerdown',e=>{e.stopPropagation();if(focus)interact(focus);else say('Pandang objek yang berkilau dan dekatinya.',1600)});
+if(IS_TOUCH){joy.style.display='block'}
+function togglePause(){if(state==='play'||state==='auto'){prevState=state;state='pause';$('pause').style.display='flex'}else if(state==='pause'){state=prevState;$('pause').style.display='none'}}
+$('bpause').onclick=()=>togglePause();$('resume').onclick=()=>togglePause();
+/* mod mudah */
+Object.keys(ROOMS).forEach(k=>{const b=document.createElement('button');b.textContent='📍 '+ROOMS[k].n;b.onclick=()=>autoWalk(k);$('nav').appendChild(b)});
+function autoWalk(k){if(state!=='play')return;const pts=pathTo(k);auto={pts,i:0};state='auto'}
+const free=(x,z)=>!AB.some(b=>x>b[0]-.32&&x<b[1]+.32&&z>b[2]-.32&&z<b[3]+.32);
+let bob=0;
+function step(dt){
+ if(state==='play'){let a=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0)+jx,f=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0)+jz;const l=Math.hypot(a,f);if(l>1){a/=l;f/=l}
+  const dx=(Math.cos(yaw)*a-Math.sin(yaw)*f)*2.7*dt,dz=(-Math.sin(yaw)*a-Math.cos(yaw)*f)*2.7*dt;if(free(P.x+dx,P.z))P.x+=dx;if(free(P.x,P.z+dz))P.z+=dz;if(l>.05)bob+=dt*9;
+  if(++fr%4===0){const h=pickAt(0,0);focus=h&&h.d<=REACH?h:null;const p=$('prompt');if(focus){p.textContent=(IS_TOUCH?'TEKAN UNTUK PERIKSA':'TEKAN E UNTUK PERIKSA')+' · '+labOf(focus.ref);p.style.display='block'}else p.style.display='none';$('ibtn').className=focus?'on':''}}
+ else if(state==='auto'){const q=auto.pts[auto.i];const dx=q[0]-P.x,dz=q[1]-P.z,d=Math.hypot(dx,dz),s=3.2*dt;
+  if(d>.01){const ty=Math.atan2(-dx,-dz);let dy=((ty-yaw)%(2*Math.PI)+3*Math.PI)%(2*Math.PI)-Math.PI;yaw+=dy*Math.min(1,dt*7);pitch*=.9}
+  if(d<=s){P.x=q[0];P.z=q[1];if(++auto.i>=auto.pts.length){state='play';auto=null}}else{P.x+=dx/d*s;P.z+=dz/d*s;bob+=dt*9}
+  $('prompt').style.display='none'}
+ else if(state!=='cut'){$('prompt').style.display='none';focus=null}
+ for(let i=tw.length-1;i>=0;i--){const w=tw[i];w.t+=dt;const p=Math.min(w.t/w.d,1);w.f(p);if(p>=1){tw.splice(i,1);w.e&&w.e()}}
+ const s=.38+.08*Math.sin(performance.now()/220);sparks.forEach(o=>{if(o.visible&&!o.userData.fixed)o.scale.set(s,s,s)});
+ cam.position.set(P.x,1.6+Math.sin(bob)*.03,P.z);cam.rotation.set(pitch,yaw,0);pl.position.copy(cam.position)}
+let last=0;function loop(t){requestAnimationFrame(loop);const dt=Math.min((t-last)/1000,.05);last=t;step(dt);R.render(sc,cam)}
+/* ===== LOGIK PERMAINAN: BUKTI, SOALAN, KOD, PETI ===== */
+const digits=new Array(N).fill(''),nSolved=()=>digits.filter(d=>d!=='').length,qOf=ev=>gameQuestions.findIndex(q=>q.location===ev.id);
+let code=finalCode,cur=null,entry='';
+(function(){const e=[],u={};gameQuestions.forEach(q=>{if(!EVS[q.location])e.push('Lokasi tidak sah: '+q.location);if(u[q.location])e.push('Lokasi berulang: '+q.location);u[q.location]=1;if(!q.options||q.correctAnswer<0||q.correctAnswer>=q.options.length)e.push('Jawapan betul kes '+q.id+' tidak sah')});
+ const d=gameQuestions.map(q=>q.digit).join('');if(d!==finalCode){e.push('Digit ('+d+') tidak sepadan dengan finalCode ('+finalCode+'). Kod '+d+' digunakan.');code=d}
+ if(e.length){$('cfgw').textContent='⚠ Semakan guru: '+e.join(' | ');console.warn(e)}})();
+function hud(){$('hb').textContent=nSolved();$('hn').textContent=N;$('hc').textContent=digits.map(d=>d||'_').join(' ')}
+function evUse(ev){const qi=qOf(ev);if(qi<0){say(NOCLUE);return}if(ev.solved){say('Barang bukti ini sudah disahkan.');return}startEv(ev,qi)}
+function startEv(ev,qi){state='cut';cur={ev,qi};$('prompt').style.display='none';blip();ev.sp.visible=false;const g=ev.g;sc.attach(g);
+ const p0=g.position.clone(),q0=g.quaternion.clone(),d=new T.Vector3();cam.getWorldDirection(d);const tp=cam.position.clone().add(d.multiplyScalar(.6));tp.y+=.1;
+ const q1=cam.quaternion.clone().multiply(new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),Math.PI/2));cur.fly={p0,q0,tp,q1};
+ tween(.7,p=>{const e=ease(p);g.position.lerpVectors(p0,tp,e);g.quaternion.copy(q0).slerp(q1,e);g.scale.setScalar(1+1.3*e)},()=>tween(.7,p=>ev.open(ease(p)),()=>showPanel(ev,qi)))}
+function showPanel(ev,qi){const q=gameQuestions[qi];state='read';$('ph').textContent='BARANG BUKTI '+q.id+': '+q.evidenceName.toUpperCase();
+ $('qs').innerHTML=q.sentence.replace('_____','<span class="bl" id="bl">&nbsp;</span>');$('qf').textContent='';$('qf').style.color='';$('pclose').style.display='none';$('pcard').className='';
+ $('qo').innerHTML='';q.options.forEach((o,k)=>{const b=document.createElement('button');b.className='op';b.textContent='ABCD'[k]+'. '+o;b.onclick=()=>ans(k,b);$('qo').appendChild(b)});$('panel').style.display='flex'}
+function ans(k,b){snd();if(!cur||state!=='read'||cur.ev.solved)return;const q=gameQuestions[cur.qi];
+ if(k===q.correctAnswer){Array.from($('qo').children).forEach(x=>x.disabled=true);b.className='op good';$('bl').textContent=q.options[k];digits[cur.qi]=q.digit;cur.ev.solved=true;hud();
+  $('qf').style.color='#0b7a41';$('qf').textContent='BETUL! Barang bukti berjaya disahkan. '+q.successMessage+' (Digit: '+q.digit+')';fx('g');winS();$('pclose').style.display='block'}
+ else{b.className='op bad';b.disabled=true;$('qf').style.color='#c0262d';$('qf').textContent='Petunjuk ini belum tepat. Cuba lagi, Detektif!';fx('r');buzzS();
+  const c=$('pcard');c.className='';void c.offsetWidth;c.className='sh';const z=$('buzz');z.style.display='block';setTimeout(()=>z.style.display='none',700)}}
+$('pclose').onclick=()=>{if(!cur||!cur.ev.solved)return;const {ev,qi}=cur,f=cur.fly,g=ev.g;$('panel').style.display='none';
+ tween(.45,p=>ev.open(1-ease(p)),()=>tween(.7,p=>{const e=ease(p);g.position.lerpVectors(f.tp,f.p0,e);g.quaternion.copy(f.q1).slerp(f.q0,e);g.scale.setScalar(2.3-1.3*e)},()=>{
+  ev.par.add(g);g.position.set(ev.hp[0],ev.hp[1],ev.hp[2]);g.rotation.set(0,ev.hp[3],0);g.scale.setScalar(1);cur=null;state='play';say(nSolved()+'/'+N+' barang bukti ditemui',2200);
+  if(nSolved()>=N){setClue('Semua bukti ditemui! Cari peti amanah di bilik belakang.');delay(2.4,()=>say('Semua bukti ditemui! Cari peti amanah di bilik belakang.',3500))}}))};
+/* beg */
+function showInv(){const l=$('invl');l.innerHTML=gameQuestions.map((q,i)=>digits[i]?'✔ <b>'+q.evidenceName+'</b> — digit '+digits[i]:'❔ Barang bukti belum ditemui').join('<br>')+'<br><br>KOD RAHSIA: <b>'+digits.map(d=>d||'_').join(' ')+'</b>';$('inv').style.display='flex'}
+$('bbag').onclick=()=>{if(state==='play'){state='ui';showInv()}};$('invx').onclick=()=>{$('inv').style.display='none';if(state==='ui')state='play'};
+/* peti amanah */
+function vaultUse(v){if(v.open){say('Peti amanah telah dibuka.');return}if(nSolved()<N){buzzS();say('Peti ini dikunci dengan kod '+N+' digit. Kumpulkan semua barang bukti dahulu.',3200);return}state='kp';entry='';$('kp').style.display='flex';kpRender('Masukkan kod rahsia '+code.length+' digit.')}
+function kpRender(m){const d=$('kd');d.innerHTML='';for(let i=0;i<code.length;i++){const s=document.createElement('span');s.textContent=entry[i]||'';d.appendChild(s)}$('kmsg').textContent=m||''}
+['1','2','3','4','5','6','7','8','9','PADAM','0','SAHKAN'].forEach(k=>{const b=document.createElement('button');b.textContent=k;b.className=k==='SAHKAN'?'ok':k==='PADAM'?'del':'';b.onclick=()=>kpPress(k);$('kg').appendChild(b)});
+function kpPress(k){if(state!=='kp')return;snd();tone(600,.06,'square',.1);
+ if(k==='PADAM')entry=entry.slice(0,-1);else if(k==='SAHKAN'){
+  if(entry===code)unlockVault();else{buzzS();fx('r');entry='';kpRender('Kod tidak tepat. Semak semula barang bukti yang telah dikumpulkan.');return}}
+ else if(entry.length<code.length)entry+=k;kpRender(k==='SAHKAN'?'':$('kmsg').textContent)}
+function kpKey(k){if(/^[0-9]$/.test(k))kpPress(k);else if(k==='backspace')kpPress('PADAM');else if(k==='enter')kpPress('SAHKAN')}
+function closeKp(){$('kp').style.display='none';if(state==='kp')state='play'}$('kx').onclick=closeKp;
+function unlockVault(){$('kp').style.display='none';state='cut';VAULT.open=true;VAULT.sp.visible=false;tone(300,.15,'square',.2);tone(500,.3,'square',.2,.15);winS();
+ money.forEach(m=>m.visible=true);glow.visible=true;glow.userData.fixed=true;
+ tween(1.6,p=>{const e=ease(p);vpv.rotation.x=1.9*e;vlight.intensity=2.2*e;glow.scale.set(.2+2.2*e,.2+2.2*e,1)},()=>{say('Peti amanah berjaya ditemukan!',3500);delay(3.2,()=>{$('int').style.display='flex'})})}
+$('intx').onclick=()=>{$('int').style.display='none';['hud','cross','clue','ibtn','joy','nav','prompt'].forEach(i=>$(i).style.display='none');$('end').style.display='flex';state='end'};
+/* main semula */
+function resetGame(){tw.length=0;cur=null;entry='';digits.fill('');
+ for(const k in items){const it=items[k];it.open=false;setO(it,0);it.sp.visible=true}
+ for(const k in EVS){const ev=EVS[k];ev.solved=false;ev.open(0);ev.sp.visible=true;ev.par.add(ev.g);ev.g.position.set(ev.hp[0],ev.hp[1],ev.hp[2]);ev.g.rotation.set(0,ev.hp[3],0);ev.g.scale.setScalar(1);
+  if(ev.cont)ev.ms.forEach(m=>{const i=pickM.indexOf(m);if(i>=0)pickM.splice(i,1)})}
+ VAULT.open=false;VAULT.sp.visible=true;vpv.rotation.x=0;money.forEach(m=>m.visible=false);glow.visible=false;vlight.intensity=0;
+ ['panel','kp','inv','pause','int','end'].forEach(i=>$(i).style.display='none');$('hud').style.display='flex';$('cross').style.display='block';$('clue').style.display='block';
+ if(IS_TOUCH){$('ibtn').style.display='block';joy.style.display='block'}if(mode==='mudah')$('nav').style.display='flex';
+ P.x=-5;P.z=4.6;yaw=0;pitch=0;focus=null;auto=null;hud();setClue('Terokai rumah dan cari barang bukti.');state='play'}
+$('again').onclick=resetGame;hud();
+$('mb').onclick=()=>{mode='bebas';$('mb').className='alt sel';$('mm').className='alt'};$('mm').onclick=()=>{mode='mudah';$('mm').className='alt sel';$('mb').className='alt'};
+$('go').onclick=()=>{snd();$('start').style.display='none';$('hud').style.display='flex';$('cross').style.display='block';$('clue').style.display='block';if(IS_TOUCH)$('ibtn').style.display='block';if(mode==='mudah')$('nav').style.display='flex';setClue('Terokai rumah dan cari barang bukti.');state='play'};
+window.__g={pickM,digits,nSolved,vaultUse,kpPress,resetGame,get code(){return code},step,P,keys,free,AB,WAB,items,EVS,VAULT,ROOMS,pathTo,roomOf,act,interact,autoWalk,get state(){return state},set state(v){state=v},get yaw(){return yaw},set yaw(v){yaw=v},get auto(){return auto},say,gameQuestions,N,finalCode,tw};
+cam.position.set(P.x,1.6,P.z);requestAnimationFrame(loop);
+})();
+</script></body></html>
